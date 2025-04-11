@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Certified Data Engineer - Associate Practice Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="quiz-box">
+            <h1>AWS Certified Data Engineer - Associate</h1>
+            <div id="start-screen">
+                <p>Test your knowledge of AWS data engineering services and best practices with this practice exam. Select all correct answers that apply for each question.</p>
+                <button id="start-btn" class="submit-btn">Start Quiz</button>
+            </div>
+            <div id="quiz-content" class="hide">
+                <div id="timer" class="timer">Time: 00:00</div>
+                <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress" class="progress"></div>
+                </div>
+                <div id="progress-text">Question 1 of 5</div>
+            </div>
+            <div id="quiz">
+                <div id="question"></div>
+                <div id="choices" class="choices"></div>
+                <button id="submit" class="submit-btn">Submit</button>
+            </div>
+            <div id="results" class="hide">
+                <h2>Quiz Results</h2>
+                <p>Your score: <span id="score"></span></p>
+                <button id="restart" class="submit-btn">Restart Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

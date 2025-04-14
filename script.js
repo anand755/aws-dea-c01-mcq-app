@@ -8,7 +8,11 @@ let seconds = 0;
 
 // DOM Elements
 let startScreen, startBtn, quizContent, timerEl, questionEl, choicesEl, 
-    submitBtn, quizEl, resultsEl, scoreEl, restartBtn, progressBar, progressText;
+    submitBtn, quizEl, resultsEl, scoreEl, restartBtn, progressBar, progressText,
+    questionsList, scrollLeftBtn, scrollRightBtn;
+
+// Track answered questions and their correctness
+let answeredQuestions = new Map(); // Map of question index to boolean (correct/incorrect)
 
 // Questions data - All AWS Data Engineer Associate exam questions
 const questionsData = {
@@ -2138,14 +2142,57 @@ document.addEventListener('DOMContentLoaded', () => {
     restartBtn = document.getElementById("restart");
     progressBar = document.getElementById("progress");
     progressText = document.getElementById("progress-text");
+    questionsList = document.getElementById("questions-list");
+    scrollLeftBtn = document.getElementById("scroll-left");
+    scrollRightBtn = document.getElementById("scroll-right");
 
     // Add event listeners
     startBtn.addEventListener("click", startQuiz);
     restartBtn.addEventListener("click", resetQuiz);
     submitBtn.addEventListener("click", handleSubmit);
+    scrollLeftBtn.addEventListener("click", scrollLeft);
+    scrollRightBtn.addEventListener("click", scrollRight);
+
+    // Add touch scroll handling
+    let touchStartX = 0;
+    let touchStartScrollLeft = 0;
+    let isDragging = false;
+    
+    questionsList.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartScrollLeft = questionsList.scrollLeft;
+        isDragging = true;
+    }, { passive: true });
+    
+    questionsList.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        const touchCurrentX = e.touches[0].clientX;
+        const diffX = touchStartX - touchCurrentX;
+        questionsList.scrollLeft = touchStartScrollLeft + diffX;
+    }, { passive: true });
+    
+    questionsList.addEventListener('touchend', (e) => {
+        isDragging = false;
+        const touchEndX = e.changedTouches[0].clientX;
+        const diffX = touchStartX - touchEndX;
+        
+        // Calculate which question to jump to based on scroll position
+        const questionWidth = 55; // width + gap from CSS
+        const scrollPosition = questionsList.scrollLeft;
+        const targetQuestion = Math.round(scrollPosition / questionWidth);
+        
+        if (Math.abs(diffX) > 20) { // Reduced threshold for better responsiveness
+            if (diffX > 0 && currentQuestion < quizData.length - 1) {
+                jumpToQuestion(currentQuestion + 1);
+            } else if (diffX < 0 && currentQuestion > 0) {
+                jumpToQuestion(currentQuestion - 1);
+            }
+        }
+    }, { passive: true });
 
     // Load questions
     loadQuestions();
+    updateQuestionsList();
 });
 
 function updateProgress() {
@@ -2224,22 +2271,82 @@ function stopTimer() {
     timerInterval = null;
 }
 
+function updateQuestionsList() {
+    questionsList.innerHTML = "";
+    const totalQuestions = quizData.length;
+    const visibleQuestions = 10;
+    const halfVisible = Math.floor(visibleQuestions / 2);
+    
+    // Calculate start and end indices to show current question in the middle
+    let start = Math.max(0, currentQuestion - halfVisible);
+    let end = Math.min(totalQuestions, start + visibleQuestions);
+    
+    // Adjust start if we're near the end
+    if (end === totalQuestions) {
+        start = Math.max(0, totalQuestions - visibleQuestions);
+    }
+
+    // Create question buttons
+    for (let i = start; i < end; i++) {
+        const questionLink = document.createElement("div");
+        const isAnswered = answeredQuestions.has(i);
+        const isCorrect = isAnswered && answeredQuestions.get(i);
+        questionLink.className = `question-link${i === currentQuestion ? " current" : ""}${
+            isAnswered ? (isCorrect ? " answered-correct" : " answered-incorrect") : ""
+        }`;
+        questionLink.textContent = i + 1;
+        questionLink.addEventListener("click", () => jumpToQuestion(i));
+        questionsList.appendChild(questionLink);
+    }
+
+    // Update scroll buttons state
+    scrollLeftBtn.disabled = start === 0;
+    scrollRightBtn.disabled = end === totalQuestions;
+}
+
+function scrollLeft() {
+    if (currentQuestion > 0) {
+        jumpToQuestion(currentQuestion - 1);
+    }
+}
+
+function scrollRight() {
+    if (currentQuestion < quizData.length - 1) {
+        jumpToQuestion(currentQuestion + 1);
+    }
+}
+
+function jumpToQuestion(index) {
+    // Don't do anything if clicking the current question
+    if (index === currentQuestion) {
+        return;
+    }
+
+    selectedChoices.clear();
+    currentQuestion = index;
+    showQuestion();
+    updateQuestionsList();
+}
+
 function startQuiz() {
     startScreen.classList.add('hide');
     quizContent.classList.remove('hide');
     startTimer();
     showQuestion();
+    updateQuestionsList();
 }
 
 function resetQuiz() {
     currentQuestion = 0;
     score = 0;
     selectedChoices.clear();
+    answeredQuestions = new Map();
     stopTimer();
     resultsEl.classList.add("hide");
     quizContent.classList.add("hide");
     startScreen.classList.remove("hide");
     progressBar.style.width = "0%";
+    updateQuestionsList();
 }
 
 function handleSubmit() {
@@ -2249,6 +2356,7 @@ function handleSubmit() {
 
         if (currentQuestion < quizData.length) {
             showQuestion();
+            updateQuestionsList();
         } else {
             stopTimer();
             showResults();
@@ -2286,6 +2394,10 @@ function handleSubmit() {
     if (isAllCorrect) {
         score++;
     }
+
+    // Mark question as answered with correctness and update navigation
+    answeredQuestions.set(currentQuestion, isAllCorrect);
+    updateQuestionsList();
 
     // Disable all choices
     for (let container of containers) {

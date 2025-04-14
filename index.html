@@ -22,13 +22,15 @@
                 </div>
                 <div id="progress-text">Question 1 of 206</div>
             </div>
-            <div class="quiz-navigation">
-                <div class="questions-nav">
-                    <button id="scroll-left" class="scroll-btn">&lt;</button>
-                    <div id="questions-list" class="questions-list"></div>
-                    <button id="scroll-right" class="scroll-btn">&gt;</button>
+            <nav class="quiz-navigation">
+            <div class="questions-nav">
+                <button id="scroll-left" class="scroll-btn" aria-label="Scroll left">‹</button>
+                <div class="questions-list-container">
+                    <div class="questions-list" id="questions-list"></div>
                 </div>
+                <button id="scroll-right" class="scroll-btn" aria-label="Scroll right">›</button>
             </div>
+            </nav>
             <div id="quiz">
                 <div id="question"></div>
                 <div id="choices" class="choices"></div>

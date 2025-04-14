@@ -170,39 +170,56 @@ h1 {
 
 /* Navigation Styles */
 .quiz-navigation {
-    margin-bottom: 20px;
+    margin: 20px 0;
+    width: 100%;
+    position: relative;
+    padding: 10px 0;
 }
 
 .questions-nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-    padding: 0 20px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+    height: 55px;
+}
+
+.questions-list-container {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 0;
+    margin: 0 45px;
+    height: 100%;
+    width: calc(100% - 90px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .questions-list {
-    background-color: #f8f9fa;
-    border: 1px solid #e0e0e0;
+    height: 100%;
+    border: none;
     border-radius: 5px;
-    padding: 10px 15px;
-    overflow-x: scroll;
+    padding: 10px 5px;
+    overflow-x: auto;
     white-space: nowrap;
-    flex: 1;
     display: flex;
-    gap: 15px;
+    gap: 8px;
     scroll-behavior: smooth;
-    width: calc(55px * 10); /* 55px = button width(40px) + gap(15px) */
-    margin: 0 auto;
-    justify-content: flex-start;
+    width: 100%;
+    justify-content: center;
     align-items: center;
-    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
-    scrollbar-width: none; /* Hide scrollbar for Firefox */
-    -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
-    padding: 10px 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     scroll-snap-type: x mandatory;
     touch-action: pan-x;
+    position: relative;
 }
 
 .questions-list::-webkit-scrollbar {
@@ -214,26 +231,39 @@ h1 {
     color: white;
     border: none;
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
     font-size: 1.2rem;
+    line-height: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    padding: 0;
+}
+
+#scroll-left {
+    left: 0;
+}
+
+#scroll-right {
+    right: 0;
 }
 
 .scroll-btn:hover {
     background-color: #EC7211;
-    transform: scale(1.05);
 }
 
 .scroll-btn:disabled {
     background-color: #FFE5CC;
     cursor: not-allowed;
-    transform: none;
     box-shadow: none;
 }
 
@@ -241,8 +271,8 @@ h1 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    min-width: 35px;
+    height: 35px;
     color: #545B64;
     text-decoration: none;
     border-radius: 50%;
@@ -253,6 +283,9 @@ h1 {
     font-weight: bold;
     flex-shrink: 0;
     scroll-snap-align: center;
+    font-size: 0.9rem;
+    margin: 0 3px;
+    line-height: 1;
 }
 
 .question-link:hover {

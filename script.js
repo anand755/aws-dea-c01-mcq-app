@@ -2305,14 +2305,16 @@ function updateQuestionsList() {
 }
 
 function scrollLeft() {
-    if (currentQuestion > 0) {
-        jumpToQuestion(currentQuestion - 1);
+    const newQuestion = Math.max(0, currentQuestion - 10);
+    if (newQuestion !== currentQuestion) {
+        jumpToQuestion(newQuestion);
     }
 }
 
 function scrollRight() {
-    if (currentQuestion < quizData.length - 1) {
-        jumpToQuestion(currentQuestion + 1);
+    const newQuestion = Math.min(quizData.length - 1, currentQuestion + 10);
+    if (newQuestion !== currentQuestion) {
+        jumpToQuestion(newQuestion);
     }
 }
 
